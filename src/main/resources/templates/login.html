@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Saber Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/img/imagen3.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 0;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-left {
+            background-color: #799351;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .logo-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 180px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+            background-color: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .login-left h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-left p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-right {
+            padding: 60px 40px;
+            background-color: #F6EEC9;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h2 {
+            color: #A20A0A;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #799351;
+            font-size: 0.95em;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-error {
+            background-color: #ffe6e6;
+            color: #A20A0A;
+            border-left: 4px solid #A20A0A;
+        }
+
+        .alert-success {
+            background-color: #e6f4e6;
+            color: #799351;
+            border-left: 4px solid #799351;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #A20A0A;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #FFA36C;
+            box-shadow: 0 0 0 3px rgba(255, 163, 108, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #A20A0A 0%, #FFA36C 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(162, 10, 10, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(162, 10, 10, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .credentials-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            border: 2px dashed #ddd;
+        }
+
+        .credentials-section h4 {
+            color: #A20A0A;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .credential-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 3px solid #799351;
+        }
+
+        .credential-item strong {
+            color: #A20A0A;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .credential-item p {
+            margin: 3px 0;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .login-left {
+                padding: 40px 30px;
+            }
+
+            .login-right {
+                padding: 40px 30px;
+            }
+
+            .login-left h1 {
+                font-size: 1.5em;
+            }
+
+            .login-header h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-left">
+            <div class="logo-container">
+                <img src="/img/Logo-UTS-1.png" alt="Logo UTS" class="logo">
+                <h1>Saber Pro</h1>
+                <p>Sistema de Gestión Académica</p>
+            </div>
+        </div>
+
+        <div class="login-right">
+            <div class="login-header">
+                <h2>Iniciar Sesión</h2>
+                <p>Ingresa tus credenciales para continuar</p>
+            </div>
+
+            <div th:if="${param.error}" class="alert alert-error">
+                ⚠️ Credenciales inválidas. Por favor intenta nuevamente.
+            </div>
+            
+            <div th:if="${param.logout}" class="alert alert-success">
+                ✓ Has cerrado sesión exitosamente.
+            </div>
+            
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <form th:action="@{/auth/login}" method="post">
+                <div class="form-group">
+                    <label for="identificador">Usuario o Correo</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="identificador" name="identificador" 
+                               placeholder="Ingresa tu usuario o correo" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" 
+                               placeholder="Ingresa tu contraseña" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="credentials-section">
+                <h4>Credenciales de prueba:</h4>
+                
+                <div class="credential-item">
+                    <strong>Administrador</strong>
+                    <p>Usuario: admin@saberpro.edu.co</p>
+                    <p>Contraseña: admin123</p>
+                </div>
+                
+                <div class="credential-item">
+                    <strong>Coordinador</strong>
+                    <p>Usuario: coordinador@saberpro.edu.co</p>
+                    <p>Contraseña: admin123</p>
+                </div>
+                
+                <div class="credential-item">
+                    <strong>Estudiante</strong>
+                    <p>Usuario: estudiante1@saberpro.edu.co</p>
+                    <p>Contraseña: 1098765432</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animación suave al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+        });
+
+        // Auto-ocultar alertas después de 5 segundos
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

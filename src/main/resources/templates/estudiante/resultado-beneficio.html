@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beneficios Académicos - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        /* Tarjeta con beneficios */
+        .beneficio-card {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(121, 147, 81, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .beneficio-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .beneficio-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .trophy-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .beneficio-card h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .beneficio-card > p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .beneficios-list {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .beneficio-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .beneficio-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .beneficio-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .beneficio-item i {
+            font-size: 24px;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .beneficio-item strong {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .beneficio-item p {
+            font-size: 16px;
+            margin: 0;
+            opacity: 0.95;
+        }
+
+        .nota-badge {
+            background: white;
+            color: var(--success);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 20px;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .vigencia-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 18px;
+        }
+
+        .vigencia-box i {
+            font-size: 24px;
+        }
+
+        /* Tarjeta sin beneficios */
+        .sin-beneficio-card {
+            background: linear-gradient(135deg, rgba(255, 163, 108, 0.15) 0%, rgba(246, 238, 201, 0.5) 100%);
+            border: 3px solid var(--secondary);
+            padding: 50px 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 163, 108, 0.2);
+        }
+
+        .info-icon {
+            font-size: 80px;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            animation: swing 3s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .sin-beneficio-card h3 {
+            font-size: 28px;
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .sin-beneficio-card p {
+            font-size: 18px;
+            color: var(--dark);
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .back-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.05) 0%, rgba(246, 238, 201, 0.2) 100%);
+            border-radius: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--success);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+        }
+
+        .back-btn:hover {
+            background: #6b8247;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .beneficio-card,
+            .sin-beneficio-card {
+                padding: 30px 20px;
+            }
+
+            .beneficio-card h2 {
+                font-size: 28px;
+            }
+
+            .trophy-icon,
+            .info-icon {
+                font-size: 60px;
+            }
+
+            .beneficios-list {
+                padding: 20px;
+            }
+
+            .beneficio-item {
+                padding: 20px;
+            }
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .beneficio-card,
+        .sin-beneficio-card {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .beneficio-item {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .beneficio-item:nth-child(1) { animation-delay: 0.2s; }
+        .beneficio-item:nth-child(2) { animation-delay: 0.4s; }
+        .beneficio-item:nth-child(3) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-gift"></i> Beneficios Académicos</h1>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Con Beneficios -->
+            <div th:if="${tieneBeneficios}" class="beneficio-card">
+                <div class="beneficio-content">
+                    <div class="trophy-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h2>¡FELICITACIONES!</h2>
+                    <p th:text="${beneficio}">Has obtenido beneficios académicos por tu excelente desempeño</p>
+
+                    <div class="beneficios-list">
+                        <div th:if="${resultado.exoneradoTrabajoGrado}" class="beneficio-item">
+                            <i class="fas fa-file-contract"></i>
+                            <strong>Exoneración de Trabajo de Grado</strong>
+                            <p>¡Felicitaciones! Has sido exonerado del trabajo de grado.</p>
+                            <span class="nota-badge" th:text="${resultado.notaTrabajoGrado + '/5.0'}">5.0/5.0</span>
+                        </div>
+
+                        <div th:if="${resultado.becaDerechosGrado > 0}" class="beneficio-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <strong>Beca de Derechos de Grado</strong>
+                            <p>Has obtenido un descuento en tus derechos de grado.</p>
+                            <span class="nota-badge" th:text="${resultado.becaDerechosGrado + '%'}">100%</span>
+                        </div>
+
+                        <div class="vigencia-box">
+                            <i class="fas fa-calendar-check"></i>
+                            <strong>Vigencia:</strong> 
+                            <span th:text="${resultado.vigenciaIncentivo != null ? 'hasta ' + #temporals.format(resultado.vigenciaIncentivo, 'dd/MM/yyyy') : 'No definida'}">
+                                hasta 31/12/2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sin Beneficios -->
+            <div th:if="${!tieneBeneficios}" class="sin-beneficio-card">
+                <div class="info-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h3>Aún no cumples los requisitos para beneficios</h3>
+                <p th:text="${mensaje ?: 'Sigue esforzándote y mejorando tu desempeño académico. ¡Pronto lo lograrás!'}">
+                    Sigue esforzándote y mejorando tu desempeño académico. ¡Pronto lo lograrás!
+                </p>
+            </div>
+
+            <!-- Botón Volver -->
+            <div class="back-section">
+                <a href="/estudiante/" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Confeti cuando hay beneficios
+            const tieneBeneficios = document.querySelector('.beneficio-card');
+            
+            if (tieneBeneficios) {
+                // Efecto de celebración en el trofeo
+                const trophy = document.querySelector('.trophy-icon');
+                let hue = 0;
+                
+                setInterval(() => {
+                    hue = (hue + 10) % 360;
+                    trophy.style.filter = `hue-rotate(${hue}deg)`;
+                }, 100);
+            }
+
+            // Efecto de pulse en el icono de información
+            const infoIcon = document.querySelector('.info-icon');
+            if (infoIcon) {
+                setInterval(() => {
+                    infoIcon.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        infoIcon.style.transform = 'scale(1)';
+                    }, 300);
+                }, 2000);
+                
+                infoIcon.style.transition = 'transform 0.3s ease';
+            }
+        });
+    </script>
+</body>
+</html>

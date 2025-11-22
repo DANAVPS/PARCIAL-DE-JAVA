@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calificar Estudiante - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            margin-top: 10px;
+        }
+
+        .student-badge strong {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .student-badge span {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.5s ease;
+            background: rgba(121, 147, 81, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border: 2px solid var(--accent);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-item label {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item span {
+            color: var(--dark);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .form-card {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.2) 0%, white 100%);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+
+        tr {
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        tr:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        th:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        td {
+            padding: 15px;
+            color: var(--dark);
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+        }
+
+        td:first-child {
+            background: rgba(246, 238, 201, 0.5);
+            color: var(--dark);
+            font-weight: 600;
+            border-radius: 10px 0 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        td:first-child i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        td:not(:first-child) {
+            background: white;
+        }
+
+        td:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(121, 147, 81, 0.1);
+        }
+
+        .date-input-row td {
+            background: rgba(121, 147, 81, 0.1) !important;
+        }
+
+        .date-input-row td:first-child {
+            background: rgba(121, 147, 81, 0.2) !important;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        .btn-back {
+            background: var(--light);
+            color: var(--dark);
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-back:hover {
+            background: var(--dark);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .info-card {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            table {
+                display: block;
+            }
+
+            tr {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+
+            td {
+                padding: 10px 15px;
+            }
+
+            td:first-child {
+                border-radius: 10px 10px 0 0;
+            }
+
+            td:last-child {
+                border-radius: 0 0 10px 10px;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        tr {
+            opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        tr:nth-child(1) { animation-delay: 0.1s; }
+        tr:nth-child(2) { animation-delay: 0.2s; }
+        tr:nth-child(3) { animation-delay: 0.3s; }
+        tr:nth-child(4) { animation-delay: 0.4s; }
+        tr:nth-child(5) { animation-delay: 0.5s; }
+        tr:nth-child(6) { animation-delay: 0.6s; }
+        tr:nth-child(7) { animation-delay: 0.7s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-star"></i> Calificar Resultados Saber Pro</h1>
+                <div class="student-badge">
+                    <strong th:text="${estudiante.primerNombre + ' ' + (estudiante.segundoNombre?:'') + ' ' + estudiante.primerApellido}">
+                        Juan Pérez
+                    </strong>
+                    <span>
+                        <i class="fas fa-id-card"></i> <span th:text="${estudiante.numeroDocumento}">1234567890</span> | 
+                        <i class="fas fa-graduation-cap"></i> <span th:text="${estudiante.programa}">Ingeniería</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Alerta de éxito -->
+            <div th:if="${success}" class="alert">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+
+            <!-- Formulario -->
+            <div class="form-card">
+                <form th:action="@{/coordinador/resultados/guardar(estudianteId=${estudiante.id})}"
+                      th:object="${resultado}" method="post">
+
+                    <input type="hidden" th:if="${resultado.id != null}" th:field="*{id}">
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Módulo / Competencia</th>
+                                    <th>Puntaje</th>
+                                    <th>Nivel</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-pen-fancy"></i>
+                                        Comunicación Escrita
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" th:field="*{comunicacionEscrita}" 
+                                               placeholder="Ej: 165.50" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" th:field="*{comunicacionEscritaNivel}" 
+                                               placeholder="Ej: Nivel B">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-calculator"></i>
+                                        Razonamiento Cuantitativo
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" th:field="*{razonamientoCuantitativo}" 
+                                               placeholder="Ej: 172.00" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" th:field="*{razonamientoCuantitativoNivel}" 
+                                               placeholder="Ej: Nivel B+">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-book-open"></i>
+                                        Lectura Crítica
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" th:field="*{lecturaCritica}" 
+                                               placeholder="Ej: 158.75" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" th:field="*{lecturaCriticaNivel}" 
+                                               placeholder="Ej: Nivel B">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-users"></i>
+                                        Competencias Ciudadanas
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" th:field="*{competenciasCiudadanas}" 
+                                               placeholder="Ej: 160.00" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" th:field="*{competenciasCiudadanasNivel}" 
+                                               placeholder="Ej: Nivel B">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-language"></i>
+                                        Inglés
+                                    </td>
+                                    <td>
+                                        <input type="number" step="0.01" th:field="*{ingles}" 
+                                               placeholder="Ej: 168.00" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" th:field="*{inglesNivel}" 
+                                               placeholder="Ej: B1">
+                                    </td>
+                                </tr>
+                                <tr class="date-input-row">
+                                    <td>
+                                        <i class="fas fa-calendar-check"></i>
+                                        Fecha del Examen
+                                    </td>
+                                    <td colspan="2">
+                                        <input type="date" th:field="*{fechaExamen}" required>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="button-container">
+                        <a href="/coordinador/crud-alumnos" class="btn-back">
+                            <i class="fas fa-arrow-left"></i>
+                            Cancelar
+                        </a>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Guardar Calificación
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-cerrar alerta después de 5 segundos
+        document.addEventListener('DOMContentLoaded', function() {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

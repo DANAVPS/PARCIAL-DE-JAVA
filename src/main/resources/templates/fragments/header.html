@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Proyecto Saber Pro'">Proyecto Saber Pro</title>
+    
+    <!-- CSS según el rol -->
+    <th:block th:if="${#authorization.expression('hasAuthority(''ADMINISTRADOR'')')}">
+        <link th:href="@{/css/admin.css}" rel="stylesheet">
+    </th:block>
+    <th:block th:if="${#authorization.expression('hasAuthority(''COORDINADOR'')')}">
+        <link th:href="@{/css/coordinador.css}" rel="stylesheet">
+    </th:block>
+    <th:block th:if="${#authorization.expression('hasAuthority(''ESTUDIANTE'')')}">
+        <link th:href="@{/css/estudiante.css}" rel="stylesheet">
+    </th:block>
+    <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>Proyecto Saber Pro</h1>
+            </div>
+            <nav class="nav">
+                <div th:if="${session.usuario != null}">
+                    <span class="user-info" th:text="'Bienvenido, ' + ${session.usuario.nombreCompleto}"></span>
+                    <span class="user-role" th:text="${session.usuario.rol}"></span>
+                    <a th:href="@{/auth/logout}" class="logout-btn">Cerrar Sesión</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">

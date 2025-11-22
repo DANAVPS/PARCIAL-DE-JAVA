@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Beneficios - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-fonts;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 70px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border-radius: 15px;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-back {
+            background: var(--light);
+            color: var(--dark);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-back:hover {
+            background: var(--dark);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: var(--dark);
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.1) 0%, rgba(246, 238, 201, 0.3) 100%);
+            border-left: 5px solid var(--success);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            font-size: 28px;
+            color: var(--success);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+        }
+
+        th {
+            padding: 18px 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--light);
+            transition: all 0.3s;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(121, 147, 81, 0.05);
+        }
+
+        tbody tr:hover {
+            background: rgba(121, 147, 81, 0.15);
+            transform: scale(1.01);
+        }
+
+        td {
+            padding: 15px;
+            color: var(--dark);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .beneficio-badge {
+            background: rgba(121, 147, 81, 0.2);
+            color: var(--success);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(255, 163, 108, 0.1) 0%, rgba(246, 238, 201, 0.3) 100%);
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: var(--dark);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--dark);
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .toolbar {
+                padding: 15px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .toolbar {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title, .table-container {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-trophy"></i> Informe de Beneficios</h1>
+                <p>Estudiantes con Exoneración y Becas - Saber Pro</p>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <a href="/coordinador/" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Panel
+                </a>
+                <button onclick="exportTableToExcel('tablaBeneficios', 'Beneficios_SaberPro')" class="btn-export">
+                    <i class="fas fa-file-excel"></i>
+                    Exportar a Excel
+                </button>
+            </div>
+
+            <!-- Título de la sección -->
+            <div class="section-title">
+                <i class="fas fa-award"></i>
+                <span>Estudiantes con Exoneración de Trabajo de Grado</span>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-container" th:if="${resultadosConBeneficios != null && !resultadosConBeneficios.isEmpty()}">
+                <table id="tablaBeneficios">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> N°</th>
+                            <th><i class="fas fa-id-card"></i> Documento</th>
+                            <th><i class="fas fa-user"></i> Nombre Completo</th>
+                            <th><i class="fas fa-graduation-cap"></i> Programa</th>
+                            <th><i class="fas fa-star"></i> Puntaje Global</th>
+                            <th><i class="fas fa-level-up-alt"></i> Nivel</th>
+                            <th><i class="fas fa-gift"></i> Beneficio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r, iterStat : ${resultadosConBeneficios}">
+                            <td th:text="${iterStat.count}">1</td>
+                            <td th:text="${r.estudiante.numeroDocumento}">1234567890</td>
+                            <td th:text="${r.estudiante.primerNombre + ' ' + (r.estudiante.segundoNombre?:'') + ' ' + r.estudiante.primerApellido + ' ' + (r.estudiante.segundoApellido?:'')}">
+                                Juan Pérez
+                            </td>
+                            <td th:text="${r.estudiante.programa}">Ingeniería de Sistemas</td>
+                            <td><strong th:text="${r.puntajeGlobal}">285</strong></td>
+                            <td th:text="${r.nivelGlobal}">B+</td>
+                            <td>
+                                <span class="beneficio-badge" th:text="${r.beneficioObtenido}">
+                                    Exoneración Trabajo de Grado
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estado vacío -->
+            <div class="empty-state" th:if="${resultadosConBeneficios == null || resultadosConBeneficios.isEmpty()}">
+                <i class="fas fa-inbox"></i>
+                <h3>No hay estudiantes con beneficios registrados</h3>
+                <p>Los estudiantes aparecerán aquí cuando cumplan los requisitos para obtener beneficios académicos</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function exportTableToExcel(tableID, filename = ''){
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel';
+            var tableSelect = document.getElementById(tableID);
+            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+            filename = filename?filename+'.xls':'excel_data.xls';
+            downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            if(navigator.msSaveOrOpenBlob){
+                var blob = new Blob(['\ufeff', tableHTML], {type: dataType});
+                navigator.msSaveOrOpenBlob(blob, filename);
+            }else{
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+                downloadLink.download = filename;
+                downloadLink.click();
+            }
+        }
+    </script>
+</body>
+</html>

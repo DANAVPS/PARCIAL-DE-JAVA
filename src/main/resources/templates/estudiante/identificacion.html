@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Datos Personales - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border: 2px solid var(--accent);
+            border-radius: 15px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 5px 20px rgba(162, 10, 10, 0.3);
+        }
+
+        .profile-icon i {
+            font-size: 48px;
+            color: white;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+        }
+
+        .info-table tr {
+            transition: all 0.3s ease;
+        }
+
+        .info-table td {
+            padding: 18px 20px;
+            background: white;
+            border: none;
+        }
+
+        .info-table td:first-child {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 10px 0 0 10px;
+            width: 40%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-table td:first-child i {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .info-table td:last-child {
+            background: rgba(246, 238, 201, 0.3);
+            color: var(--dark);
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 0 10px 10px 0;
+            border-left: 3px solid var(--success);
+        }
+
+        .info-table tr:hover td:first-child {
+            background: linear-gradient(135deg, #8a0808 0%, var(--primary) 100%);
+            transform: translateX(-5px);
+            box-shadow: 5px 0 15px rgba(162, 10, 10, 0.2);
+        }
+
+        .info-table tr:hover td:last-child {
+            background: rgba(121, 147, 81, 0.15);
+            transform: translateX(5px);
+        }
+
+        .back-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.05) 0%, rgba(246, 238, 201, 0.2) 100%);
+            border-radius: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--success);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+        }
+
+        .back-btn:hover {
+            background: #6b8247;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .profile-card {
+                padding: 25px;
+            }
+
+            .info-table td {
+                display: block;
+                width: 100% !important;
+            }
+
+            .info-table td:first-child {
+                border-radius: 10px 10px 0 0;
+                padding: 12px 15px;
+            }
+
+            .info-table td:last-child {
+                border-radius: 0 0 10px 10px;
+                border-left: none;
+                border-top: 3px solid var(--success);
+            }
+
+            .info-table tr:hover td:first-child,
+            .info-table tr:hover td:last-child {
+                transform: none;
+            }
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .profile-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .info-table tr {
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .info-table tr:nth-child(1) { animation-delay: 0.1s; }
+        .info-table tr:nth-child(2) { animation-delay: 0.2s; }
+        .info-table tr:nth-child(3) { animation-delay: 0.3s; }
+        .info-table tr:nth-child(4) { animation-delay: 0.4s; }
+        .info-table tr:nth-child(5) { animation-delay: 0.5s; }
+        .info-table tr:nth-child(6) { animation-delay: 0.6s; }
+        .info-table tr:nth-child(7) { animation-delay: 0.7s; }
+        .info-table tr:nth-child(8) { animation-delay: 0.8s; }
+
+        .back-section {
+            animation: fadeInUp 0.6s ease 0.9s forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-id-card"></i> Mis Datos Personales</h1>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="profile-card">
+                <div class="profile-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+
+                <table class="info-table">
+                    <tr>
+                        <td>
+                            <i class="fas fa-id-card"></i>
+                            Documento
+                        </td>
+                        <td th:text="${usuario.tipoDocumento + ' ' + usuario.numeroDocumento}">CC 1234567890</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-user"></i>
+                            Nombre Completo
+                        </td>
+                        <td th:text="${usuario.primerNombre + ' ' + (usuario.segundoNombre != null ? usuario.segundoNombre + ' ' : '') + usuario.primerApellido + ' ' + (usuario.segundoApellido != null ? usuario.segundoApellido : '')}">
+                            Juan Carlos Pérez Rodríguez
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-envelope"></i>
+                            Correo
+                        </td>
+                        <td th:text="${usuario.correoElectronico}">estudiante@correo.uts.edu.co</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-phone"></i>
+                            Teléfono
+                        </td>
+                        <td th:text="${usuario.numeroTelefonico}">3001234567</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-graduation-cap"></i>
+                            Programa
+                        </td>
+                        <td th:text="${usuario.programa}">Ingeniería de Sistemas</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-book"></i>
+                            Tipo Programa
+                        </td>
+                        <td th:text="${usuario.tipoPrograma}">Profesional</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-calendar-alt"></i>
+                            Semestre
+                        </td>
+                        <td th:text="${usuario.semestre}">5</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="fas fa-hashtag"></i>
+                            N° Registro
+                        </td>
+                        <td th:text="${usuario.numeroRegistro}">20231234567</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Botón Volver -->
+            <div class="back-section">
+                <a href="/estudiante/" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efecto de brillo en el icono de perfil
+            const profileIcon = document.querySelector('.profile-icon');
+            
+            setInterval(() => {
+                profileIcon.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    profileIcon.style.transform = 'scale(1)';
+                }, 500);
+            }, 3000);
+
+            profileIcon.style.transition = 'transform 0.5s ease';
+        });
+    </script>
+</body>
+</html>

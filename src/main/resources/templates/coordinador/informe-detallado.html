@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Detallado - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .filter-section {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border: 2px solid var(--accent);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .filter-section label {
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 16px;
+            margin-right: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-section select {
+            padding: 12px 20px;
+            border: 2px solid var(--light);
+            border-radius: 10px;
+            font-size: 14px;
+            min-width: 250px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .filter-section select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(255, 163, 108, 0.1);
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, var(--secondary) 0%, #ff8c4d 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 163, 108, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 163, 108, 0.4);
+        }
+
+        .btn-back {
+            background: var(--light);
+            color: var(--dark);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-back:hover {
+            background: var(--dark);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 13px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--light);
+            transition: all 0.3s;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(246, 238, 201, 0.2);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 163, 108, 0.1);
+        }
+
+        td {
+            padding: 12px 10px;
+            color: var(--dark);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .btn-view {
+            background: var(--secondary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-view:hover {
+            background: #ff8c4d;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 163, 108, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(255, 163, 108, 0.1) 0%, rgba(246, 238, 201, 0.3) 100%);
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: var(--dark);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 3% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .modal-header h3 {
+            margin: 10px 0 0 0;
+            font-size: 18px;
+            text-align: center;
+            opacity: 0.95;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin: 20px 0;
+        }
+
+        .modal-table tr {
+            transition: all 0.3s;
+        }
+
+        .modal-table tr:hover {
+            transform: translateX(5px);
+        }
+
+        .modal-table th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .modal-table th:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .modal-table th:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .modal-table td {
+            padding: 12px 15px;
+            background: rgba(246, 238, 201, 0.3);
+            text-align: center;
+            border: none;
+        }
+
+        .modal-table td:first-child {
+            background: rgba(162, 10, 10, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .modal-table td:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .modal-table tr:nth-child(even) td {
+            background: white;
+        }
+
+        .beneficio-section {
+            margin-top: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.1) 0%, rgba(246, 238, 201, 0.3) 100%);
+            border-left: 5px solid var(--success);
+            border-radius: 10px;
+        }
+
+        .beneficio-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--success);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .no-beneficio-text {
+            color: var(--primary);
+        }
+
+        .beneficio-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .beneficio-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .beneficio-item strong {
+            display: block;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .beneficio-item span {
+            color: var(--success);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 8px 5px;
+            }
+        }
+
+        @media print {
+            .toolbar, .filter-section, .btn-view {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-chart-bar"></i> Informe Detallado de Resultados Saber Pro</h1>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Filtro -->
+            <form method="get" class="filter-section">
+                <label>
+                    <i class="fas fa-filter"></i>
+                    Filtrar por programa:
+                </label>
+                <select name="programa" onchange="this.form.submit()">
+                    <option value="">-- Todos los programas --</option>
+                    <option th:each="p : ${programas}" th:value="${p}" th:text="${p}"
+                            th:selected="${programaSeleccionado != null && programaSeleccionado == p}"></option>
+                </select>
+            </form>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <button onclick="exportTableToExcel('tablaDetallada', 'Informe_Detallado')" class="btn-export">
+                    <i class="fas fa-file-excel"></i>
+                    Exportar a Excel
+                </button>
+                <button onclick="window.print()" class="btn-print">
+                    <i class="fas fa-print"></i>
+                    Imprimir
+                </button>
+                <a href="/coordinador/" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver
+                </a>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-container" th:if="${!resultados.isEmpty()}">
+                <table id="tablaDetallada">
+                    <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Estudiante</th>
+                            <th>Programa</th>
+                            <th>Puntaje Global</th>
+                            <th>Nivel Global</th>
+                            <th>Com. Escrita</th>
+                            <th>Raz. Cuantitativo</th>
+                            <th>Lect. Crítica</th>
+                            <th>Inglés</th>
+                            <th>Fecha Examen</th>
+                            <th>Detalle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${resultados}">
+                            <td th:text="${r.estudiante.numeroDocumento}">1234567890</td>
+                            <td th:text="${r.estudiante.primerNombre + ' ' + (r.estudiante.segundoNombre?:'') + ' ' + r.estudiante.primerApellido + ' ' + (r.estudiante.segundoApellido?:'')}">
+                                Juan Pérez
+                            </td>
+                            <td th:text="${r.estudiante.programa}">Ing. Sistemas</td>
+                            <td><strong th:text="${r.puntajeGlobal}">285</strong></td>
+                            <td th:text="${r.nivelGlobal}">B+</td>
+                            <td th:text="${r.comunicacionEscrita + ' (' + r.comunicacionEscritaNivel + ')'}">165 (B)</td>
+                            <td th:text="${r.razonamientoCuantitativo + ' (' + r.razonamientoCuantitativoNivel + ')'}">172 (B+)</td>
+                            <td th:text="${r.lecturaCritica + ' (' + r.lecturaCriticaNivel + ')'}">158 (B)</td>
+                            <td th:text="${r.ingles + ' (' + r.nivelIngles + ')'}">168 (B1)</td>
+                            <td th:text="${r.fechaExamen != null ? #temporals.format(r.fechaExamen, 'dd/MM/yyyy') : 'Sin fecha'}">15/10/2023</td>
+                            <td>
+                                <button class="btn-view" th:onclick="'abrirModal(\'' + @{/coordinador/resultados/ver/{id}(id=${r.estudiante.id})} + '\')'">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estado vacío -->
+            <div th:if="${resultados.isEmpty()}" class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>No se encontraron resultados para el filtro seleccionado</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalDetalle" class="modal"></div>
+
+    <script>
+        function abrirModal(url) {
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById("modalDetalle").innerHTML = html;
+                    document.getElementById("modalDetalle").style.display = "block";
+                });
+        }
+
+        // Cerrar al hacer clic fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById("modalDetalle");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        function exportTableToExcel(tableID, filename = ''){
+            let table = document.getElementById(tableID);
+            let rows = [];
+            for(let i = 0; i < table.rows.length; i++){
+                let row = [], cols = table.rows[i].cells;
+                for(let j = 0; j < cols.length - 1; j++)
+                    row.push(cols[j].innerText);
+                rows.push(row.join("\t"));
+            }
+            let csv = rows.join("\n");
+            let blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8;'});
+            let url = URL.createObjectURL(blob);
+            let link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename ? filename + ".csv" : "informe.csv");
+            link.click();
+        }
+    </script>
+</body>
+</html>

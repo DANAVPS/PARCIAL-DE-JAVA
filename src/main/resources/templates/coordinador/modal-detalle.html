@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="modalContent">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        .modal-wrapper {
+            background: white;
+            padding: 0;
+            border-radius: 20px;
+            max-width: 900px;
+            margin: 20px auto;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+            position: relative;
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 10s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .modal-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 2;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .student-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .student-icon i {
+            font-size: 40px;
+            color: var(--primary);
+        }
+
+        .modal-header h2 {
+            font-size: 26px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .modal-body {
+            padding: 35px;
+            background: white;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .competencias-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin: 20px 0;
+        }
+
+        .competencias-table thead tr {
+            background: var(--primary);
+        }
+
+        .competencias-table th {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .competencias-table th:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .competencias-table th:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .competencias-table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .competencias-table tbody tr:hover {
+            transform: translateX(5px);
+        }
+
+        .competencias-table td {
+            padding: 15px;
+            text-align: center;
+            border: none;
+            background: white;
+        }
+
+        .competencias-table td:first-child {
+            background: rgba(246, 238, 201, 0.5);
+            color: var(--dark);
+            font-weight: 600;
+            border-radius: 10px 0 0 10px;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .competencias-table td:nth-child(2) {
+            background: rgba(162, 10, 10, 0.05);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .competencias-table td:last-child {
+            background: rgba(121, 147, 81, 0.1);
+            color: var(--success);
+            font-weight: 600;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .competencias-table tr:nth-child(even) td:first-child {
+            background: rgba(246, 238, 201, 0.3);
+        }
+
+        .beneficio-section {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.1) 0%, rgba(246, 238, 201, 0.3) 100%);
+            border-left: 5px solid var(--success);
+            border-radius: 15px;
+        }
+
+        .beneficio-section.no-beneficio {
+            background: linear-gradient(135deg, rgba(162, 10, 10, 0.05) 0%, rgba(255, 163, 108, 0.1) 100%);
+            border-left-color: var(--primary);
+        }
+
+        .beneficio-icon {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .beneficio-icon i {
+            font-size: 48px;
+            color: var(--success);
+        }
+
+        .no-beneficio .beneficio-icon i {
+            color: var(--primary);
+        }
+
+        .beneficio-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--success);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .no-beneficio-text {
+            color: var(--primary);
+        }
+
+        .beneficio-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .beneficio-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .beneficio-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.2);
+        }
+
+        .beneficio-item i {
+            font-size: 24px;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        .beneficio-item strong {
+            display: block;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .beneficio-item span {
+            color: var(--success);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .modal-wrapper {
+                margin: 10px;
+                max-width: 100%;
+            }
+
+            .modal-header {
+                padding: 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .competencias-table {
+                font-size: 12px;
+            }
+
+            .competencias-table th,
+            .competencias-table td {
+                padding: 10px 8px;
+            }
+
+            .beneficio-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="modal-wrapper">
+        <div class="modal-header">
+            <div class="modal-header-content">
+                <span class="close-btn" onclick="document.getElementById('modalDetalle').style.display='none'">×</span>
+                
+                <div class="student-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                
+                <h2>Resultados Detallados</h2>
+                <h3>
+                    <span th:text="${estudiante.primerNombre + ' ' + (estudiante.segundoNombre?:'') + ' ' + estudiante.primerApellido + ' ' + (estudiante.segundoApellido?:'')}">
+                        Juan Carlos Pérez Rodríguez
+                    </span>
+                </h3>
+            </div>
+        </div>
+
+        <div class="modal-body">
+            <!-- Tabla de Competencias -->
+            <div class="section-title">
+                <i class="fas fa-chart-pie"></i>
+                <span>Puntajes por Competencia</span>
+            </div>
+
+            <table class="competencias-table">
+                <thead>
+                    <tr>
+                        <th>Módulo / Competencia</th>
+                        <th>Puntaje</th>
+                        <th>Nivel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><i class="fas fa-pen-fancy" style="margin-right: 8px; color: var(--primary);"></i> Comunicación Escrita</td>
+                        <td th:text="${resultado.comunicacionEscrita} ?: '-'">165</td>
+                        <td th:text="${resultado.comunicacionEscritaNivel}">Nivel B</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-calculator" style="margin-right: 8px; color: var(--primary);"></i> Razonamiento Cuantitativo</td>
+                        <td th:text="${resultado.razonamientoCuantitativo} ?: '-'">172</td>
+                        <td th:text="${resultado.razonamientoCuantitativoNivel}">Nivel B+</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-book-open" style="margin-right: 8px; color: var(--primary);"></i> Lectura Crítica</td>
+                        <td th:text="${resultado.lecturaCritica} ?: '-'">158</td>
+                        <td th:text="${resultado.lecturaCriticaNivel}">Nivel B</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-users" style="margin-right: 8px; color: var(--primary);"></i> Competencias Ciudadanas</td>
+                        <td th:text="${resultado.competenciasCiudadanas} ?: '-'">160</td>
+                        <td th:text="${resultado.competenciasCiudadanasNivel}">Nivel B</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-language" style="margin-right: 8px; color: var(--primary);"></i> Inglés</td>
+                        <td th:text="${resultado.ingles} ?: '-'">168</td>
+                        <td th:text="${resultado.nivelIngles}">B1</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-project-diagram" style="margin-right: 8px; color: var(--primary);"></i> Formulación de Proyectos</td>
+                        <td th:text="${resultado.formulacionProyectos} ?: '-'">-</td>
+                        <td th:text="${resultado.formulacionProyectosNivel}">-</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-flask" style="margin-right: 8px; color: var(--primary);"></i> Pensamiento Científico</td>
+                        <td th:text="${resultado.pensamientoCientifico} ?: '-'">-</td>
+                        <td th:text="${resultado.pensamientoCientificoNivel}">-</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-code" style="margin-right: 8px; color: var(--primary);"></i> Diseño de Software</td>
+                        <td th:text="${resultado.disenoSoftware} ?: '-'">-</td>
+                        <td th:text="${resultado.disenoSoftwareNivel}">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Sección de Beneficios -->
+            <div class="beneficio-section" 
+                 th:classappend="${resultado.beneficioObtenido != null && resultado.beneficioObtenido.contains('Sin beneficio') ? 'no-beneficio' : ''}">
+                
+                <div class="beneficio-icon">
+                    <i class="fas" th:classappend="${resultado.beneficioObtenido != null && !resultado.beneficioObtenido.contains('Sin beneficio') ? 'fa-trophy' : 'fa-info-circle'}"></i>
+                </div>
+
+                <h3 class="beneficio-text" 
+                    th:classappend="${resultado.beneficioObtenido != null && resultado.beneficioObtenido.contains('Sin beneficio') ? 'no-beneficio-text' : ''}"
+                    th:text="${resultado.beneficioObtenido} ?: 'Sin beneficio'">
+                    Exoneración de Trabajo de Grado
+                </h3>
+
+                <div class="beneficio-details">
+                    <div class="beneficio-item">
+                        <i class="fas fa-file-contract"></i>
+                        <strong>Nota Trabajo de Grado</strong>
+                        <span th:text="${resultado.notaTrabajoGrado} ?: 'N/A'">5.0</span>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <strong>Beca Derechos de Grado</strong>
+                        <span><span th:text="${resultado.becaDerechosGrado} ?: '0'">100</span>%</span>
+                    </div>
+
+                    <div class="beneficio-item">
+                        <i class="fas fa-calendar-check"></i>
+                        <strong>Vigencia del Incentivo</strong>
+                        <span th:text="${resultado.vigenciaIncentivo != null ? #temporals.format(resultado.vigenciaIncentivo, 'dd/MM/yyyy') : 'No aplica'}">
+                            31/12/2024
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

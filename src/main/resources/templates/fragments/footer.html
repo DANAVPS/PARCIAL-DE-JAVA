@@ -1,0 +1,39 @@
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Proyecto Saber Pro</h3>
+                    <p>Sistema de gestión de resultados e incentivos</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p>Email: info@saberpro.edu.co</p>
+                    <p>Teléfono: +57 1 234 5678</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <a th:href="@{/auth/login}">Iniciar Sesión</a>
+                    <a th:href="@{/}">Inicio</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Proyecto Saber Pro. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript según el rol -->
+    <th:block th:if="${#authorization.expression('hasAuthority(''ADMINISTRADOR'')')}">
+        <script th:src="@{/js/admin.js}"></script>
+    </th:block>
+    <th:block th:if="${#authorization.expression('hasAuthority(''COORDINADOR'')')}">
+        <script th:src="@{/js/coordinador.js}"></script>
+    </th:block>
+    <th:block th:if="${#authorization.expression('hasAuthority(''ESTUDIANTE'')')}">
+        <script th:src="@{/js/estudiante.js}"></script>
+    </th:block>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

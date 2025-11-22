@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Último Resultado - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .resultado-main {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(121, 147, 81, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resultado-main::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .resultado-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .trophy-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .puntaje-global {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .puntaje-valor {
+            font-size: 72px;
+            font-weight: 700;
+            display: block;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .nivel-badge {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 28px;
+            font-style: italic;
+            display: inline-block;
+            margin-top: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .fecha-examen {
+            margin-top: 25px;
+            font-size: 16px;
+            opacity: 0.95;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .fecha-examen i {
+            font-size: 20px;
+        }
+
+        .competencias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .competencia-card {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border-left: 5px solid var(--success);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .competencia-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(121, 147, 81, 0.2);
+            border-left-width: 8px;
+        }
+
+        .competencia-titulo {
+            color: var(--dark);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .competencia-titulo i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        .competencia-score {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid var(--accent);
+        }
+
+        .competencia-valor {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .competencia-nivel {
+            font-size: 18px;
+            color: var(--success);
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        .no-result-card {
+            background: linear-gradient(135deg, rgba(255, 163, 108, 0.15) 0%, rgba(246, 238, 201, 0.5) 100%);
+            border: 3px solid var(--secondary);
+            padding: 60px 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 163, 108, 0.2);
+        }
+
+        .no-result-icon {
+            font-size: 80px;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            animation: swing 3s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .no-result-card h3 {
+            font-size: 28px;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .back-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.05) 0%, rgba(246, 238, 201, 0.2) 100%);
+            border-radius: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--success);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+        }
+
+        .back-btn:hover {
+            background: #6b8247;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .resultado-main {
+                padding: 30px 20px;
+            }
+
+            .puntaje-valor {
+                font-size: 56px;
+            }
+
+            .nivel-badge {
+                font-size: 22px;
+                padding: 10px 25px;
+            }
+
+            .competencias-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .no-result-card {
+                padding: 40px 20px;
+            }
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .resultado-main,
+        .competencia-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .competencia-card:nth-child(1) { animation-delay: 0.1s; }
+        .competencia-card:nth-child(2) { animation-delay: 0.2s; }
+        .competencia-card:nth-child(3) { animation-delay: 0.3s; }
+        .competencia-card:nth-child(4) { animation-delay: 0.4s; }
+        .competencia-card:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-star"></i> Mi Último Resultado Saber Pro</h1>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Con Resultado -->
+            <div th:if="${resultado != null}">
+                <!-- Puntaje Global -->
+                <div class="resultado-main">
+                    <div class="resultado-content">
+                        <div class="trophy-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="puntaje-global">Puntaje Global</div>
+                        <span class="puntaje-valor" th:text="${resultado.puntajeGlobal}">285</span>
+                        <div class="nivel-badge" th:text="${resultado.nivelGlobal}">Nivel B+</div>
+                        <div class="fecha-examen">
+                            <i class="fas fa-calendar-check"></i>
+                            <strong>Fecha del examen:</strong>
+                            <span th:text="${resultado.fechaExamen != null ? #temporals.format(resultado.fechaExamen, 'dd/MM/yyyy') : 'No registrada'}">
+                                15/10/2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competencias Detalladas -->
+                <div class="competencias-grid">
+                    <div class="competencia-card">
+                        <div class="competencia-titulo">
+                            <i class="fas fa-pen-fancy"></i>
+                            Comunicación Escrita
+                        </div>
+                        <div class="competencia-score">
+                            <span class="competencia-valor" th:text="${resultado.comunicacionEscrita}">165</span>
+                            <span>→</span>
+                            <span class="competencia-nivel" th:text="${resultado.comunicacionEscritaNivel}">Nivel B</span>
+                        </div>
+                    </div>
+
+                    <div class="competencia-card">
+                        <div class="competencia-titulo">
+                            <i class="fas fa-calculator"></i>
+                            Razonamiento Cuantitativo
+                        </div>
+                        <div class="competencia-score">
+                            <span class="competencia-valor" th:text="${resultado.razonamientoCuantitativo}">172</span>
+                            <span>→</span>
+                            <span class="competencia-nivel" th:text="${resultado.razonamientoCuantitativoNivel}">Nivel B+</span>
+                        </div>
+                    </div>
+
+                    <div class="competencia-card">
+                        <div class="competencia-titulo">
+                            <i class="fas fa-book-open"></i>
+                            Lectura Crítica
+                        </div>
+                        <div class="competencia-score">
+                            <span class="competencia-valor" th:text="${resultado.lecturaCritica}">158</span>
+                            <span>→</span>
+                            <span class="competencia-nivel" th:text="${resultado.lecturaCriticaNivel}">Nivel B</span>
+                        </div>
+                    </div>
+
+                    <div class="competencia-card">
+                        <div class="competencia-titulo">
+                            <i class="fas fa-users"></i>
+                            Competencias Ciudadanas
+                        </div>
+                        <div class="competencia-score">
+                            <span class="competencia-valor" th:text="${resultado.competenciasCiudadanas}">160</span>
+                            <span>→</span>
+                            <span class="competencia-nivel" th:text="${resultado.competenciasCiudadanasNivel}">Nivel B</span>
+                        </div>
+                    </div>
+
+                    <div class="competencia-card">
+                        <div class="competencia-titulo">
+                            <i class="fas fa-language"></i>
+                            Inglés
+                        </div>
+                        <div class="competencia-score">
+                            <span class="competencia-valor" th:text="${resultado.ingles}">168</span>
+                            <span>→</span>
+                            <span class="competencia-nivel" th:text="${resultado.inglesNivel}">B1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sin Resultado -->
+            <div th:if="${resultado == null}" class="no-result-card">
+                <div class="no-result-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>No tienes resultados registrados aún</h3>
+            </div>
+
+            <!-- Botón Volver -->
+            <div class="back-section">
+                <a href="/estudiante/" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación del puntaje global
+            const puntajeGlobal = document.querySelector('.puntaje-valor');
+            if (puntajeGlobal) {
+                const target = parseInt(puntajeGlobal.textContent);
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                puntajeGlobal.textContent = '0';
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        puntajeGlobal.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        puntajeGlobal.textContent = Math.floor(current);
+                    }
+                }, 16);
+            }
+
+            // Animación de competencias
+            const competenciasValores = document.querySelectorAll('.competencia-valor');
+            competenciasValores.forEach((valor, index) => {
+                const target = parseInt(valor.textContent);
+                const duration = 1500;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                valor.textContent = '0';
+                
+                setTimeout(() => {
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) {
+                            valor.textContent = target;
+                            clearInterval(timer);
+                        } else {
+                            valor.textContent = Math.floor(current);
+                        }
+                    }, 16);
+                }, 200 * index);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Coordinador - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 70px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            margin-top: 15px;
+        }
+
+        .user-info strong {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .user-info .area {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .stats-section {
+            margin-bottom: 40px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card.total {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+        }
+
+        .stat-card.with-results {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+        }
+
+        .stat-card.without-results {
+            background: linear-gradient(135deg, var(--secondary) 0%, #ff8c4d 100%);
+            color: white;
+        }
+
+        .stat-card i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .stat-card h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card p {
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.95;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: var(--dark);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border: 2px solid var(--accent);
+            color: var(--dark);
+            padding: 30px 25px;
+            border-radius: 15px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            transition: left 0.4s;
+            z-index: 0;
+        }
+
+        .menu-btn:hover::before {
+            left: 0;
+        }
+
+        .menu-btn i {
+            font-size: 36px;
+            color: var(--primary);
+            transition: all 0.3s;
+            z-index: 1;
+        }
+
+        .menu-btn span {
+            z-index: 1;
+            transition: color 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(162, 10, 10, 0.2);
+            border-color: var(--primary);
+        }
+
+        .menu-btn:hover i,
+        .menu-btn:hover span {
+            color: white;
+        }
+
+        .recent-students {
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.1) 0%, rgba(246, 238, 201, 0.3) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid var(--success);
+            margin-bottom: 30px;
+        }
+
+        .recent-students h3 {
+            color: var(--dark);
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .recent-students h3 i {
+            color: var(--success);
+            font-size: 24px;
+        }
+
+        .recent-students ul {
+            list-style: none;
+        }
+
+        .recent-students li {
+            padding: 15px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 3px solid var(--success);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .recent-students li::before {
+            content: '\f007';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--success);
+            font-size: 18px;
+        }
+
+        .recent-students li:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.2);
+        }
+
+        .logout-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(162, 10, 10, 0.05) 0%, rgba(246, 238, 201, 0.2) 100%);
+            border-radius: 15px;
+        }
+
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(162, 10, 10, 0.3);
+        }
+
+        .logout-btn:hover {
+            background: #8a0808;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(162, 10, 10, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .stat-card h2 {
+                font-size: 36px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card,
+        .menu-btn,
+        .recent-students {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .menu-btn:nth-child(1) { animation-delay: 0.1s; }
+        .menu-btn:nth-child(2) { animation-delay: 0.2s; }
+        .menu-btn:nth-child(3) { animation-delay: 0.3s; }
+        .menu-btn:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-user-tie"></i> Panel del Coordinador</h1>
+                <div class="user-info">
+                    <strong th:text="${usuario.primerNombre + ' ' + usuario.primerApellido}"></strong>
+                    <div class="area">
+                        <i class="fas fa-briefcase"></i> Área: <strong th:text="${usuario.areaAsignada}"></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Estadísticas -->
+            <div class="stats-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Estadísticas Generales</span>
+                </div>
+                <div class="stats">
+                    <div class="stat-card total">
+                        <i class="fas fa-users"></i>
+                        <h2 th:text="${totalEstudiantes}">0</h2>
+                        <p>Total Estudiantes</p>
+                    </div>
+                    <div class="stat-card with-results">
+                        <i class="fas fa-check-circle"></i>
+                        <h2 th:text="${estudiantesConResultados}">0</h2>
+                        <p>Con Resultados</p>
+                    </div>
+                    <div class="stat-card without-results">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h2 th:text="${estudiantesSinResultados}">0</h2>
+                        <p>Sin Resultados</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menú de Opciones -->
+            <div>
+                <div class="section-title">
+                    <i class="fas fa-tasks"></i>
+                    <span>Opciones de Gestión</span>
+                </div>
+                <div class="menu-grid">
+                    <a href="/coordinador/crud-alumnos" class="menu-btn">
+                        <i class="fas fa-user-edit"></i>
+                        <span>Gestión de Alumnos (CRUD)</span>
+                    </a>
+                    <a href="/coordinador/informe-alumnos" class="menu-btn">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Informe General de Alumnos</span>
+                    </a>
+                    <a href="/coordinador/informe-detallado" class="menu-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Informe Detallado por Programa</span>
+                    </a>
+                    <a href="/coordinador/informe-beneficios" class="menu-btn">
+                        <i class="fas fa-gift"></i>
+                        <span>Informe de Beneficios</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Estudiantes Recientes -->
+            <div th:if="${estudiantesRecientes != null}" class="recent-students">
+                <h3>
+                    <i class="fas fa-clock"></i>
+                    Últimos 5 estudiantes registrados
+                </h3>
+                <ul>
+                    <li th:each="e : ${estudiantesRecientes}" 
+                        th:text="${e.primerNombre + ' ' + e.primerApellido + ' - ' + e.programa}">
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Cerrar Sesión -->
+            <div class="logout-section">
+                <a href="/auth/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animación de contador para las estadísticas
+        document.addEventListener('DOMContentLoaded', function() {
+            const counters = document.querySelectorAll('.stat-card h2');
+            
+            counters.forEach(counter => {
+                const target = parseInt(counter.textContent);
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current);
+                    }
+                }, 16);
+            });
+
+            // Efecto de aparición para estudiantes recientes
+            const recentItems = document.querySelectorAll('.recent-students li');
+            recentItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.5s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body>
+</html>

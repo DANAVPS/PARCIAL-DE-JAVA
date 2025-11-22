@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe General de Alumnos - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 30px;
+            border-radius: 15px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            margin-top: 10px;
+        }
+
+        .info-badge p {
+            margin: 8px 0;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border-radius: 15px;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        .btn-print {
+            background: linear-gradient(135deg, var(--secondary) 0%, #ff8c4d 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 163, 108, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-print:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 163, 108, 0.4);
+        }
+
+        .btn-back {
+            background: var(--light);
+            color: var(--dark);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-back:hover {
+            background: var(--dark);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+        }
+
+        th {
+            padding: 18px 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--light);
+            transition: all 0.3s;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(246, 238, 201, 0.2);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 163, 108, 0.1);
+            transform: scale(1.01);
+        }
+
+        td {
+            padding: 15px;
+            color: var(--dark);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge.active {
+            background: rgba(121, 147, 81, 0.2);
+            color: var(--success);
+        }
+
+        .badge.inactive {
+            background: rgba(162, 10, 10, 0.2);
+            color: var(--primary);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(121, 147, 81, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .summary-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .summary-card i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .summary-card strong {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.95;
+        }
+
+        .summary-value {
+            font-size: 56px;
+            font-weight: 700;
+            display: block;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .toolbar {
+                padding: 15px;
+            }
+
+            .summary-value {
+                font-size: 42px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .toolbar, .btn-back {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table-container, .summary-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-file-alt"></i> Informe General de Alumnos</h1>
+                <div class="info-badge">
+                    <p><i class="fas fa-user-tie"></i> <strong>Coordinador:</strong> <span th:text="${usuario.primerNombre + ' ' + usuario.primerApellido}">Juan Pérez</span></p>
+                    <p><i class="fas fa-briefcase"></i> <strong>Área:</strong> <span th:text="${usuario.areaAsignada}">Ingeniería</span></p>
+                    <p><i class="fas fa-calendar-check"></i> <strong>Fecha:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}">22/11/2025 14:30</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <button onclick="exportTableToExcel('tablaAlumnos', 'Informe_General_Alumnos')" class="btn-export">
+                    <i class="fas fa-file-excel"></i>
+                    Exportar a Excel
+                </button>
+                <button onclick="window.print()" class="btn-print">
+                    <i class="fas fa-print"></i>
+                    Imprimir
+                </button>
+                <a href="/coordinador/" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Panel
+                </a>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-container">
+                <table id="tablaAlumnos">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Documento</th>
+                            <th>Nombre Completo</th>
+                            <th>Programa</th>
+                            <th>Semestre</th>
+                            <th>N° Registro</th>
+                            <th>Correo</th>
+                            <th>Estado</th>
+                            <th>Resultados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e, iterStat : ${estudiantes}">
+                            <td th:text="${iterStat.count}">1</td>
+                            <td th:text="${e.numeroDocumento}">1234567890</td>
+                            <td th:text="${e.primerNombre + ' ' + (e.segundoNombre != null ? e.segundoNombre + ' ' : '') + e.primerApellido + ' ' + (e.segundoApellido != null ? e.segundoApellido : '')}">
+                                Juan Carlos Pérez
+                            </td>
+                            <td th:text="${e.programa}">Ingeniería de Sistemas</td>
+                            <td th:text="${e.semestre}">10</td>
+                            <td th:text="${e.numeroRegistro}">20231234567</td>
+                            <td th:text="${e.correoElectronico}">juan@correo.uts.edu.co</td>
+                            <td>
+                                <span class="badge" th:classappend="${e.activo ? 'active' : 'inactive'}" 
+                                      th:text="${e.activo ? 'Activo' : 'Inactivo'}">Activo</span>
+                            </td>
+                            <td th:text="${e.resultados != null ? e.resultados.size() : 0}">1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumen -->
+            <div class="summary-card">
+                <div class="summary-content">
+                    <i class="fas fa-users"></i>
+                    <strong>Total de Estudiantes Registrados</strong>
+                    <span class="summary-value" th:text="${estudiantes.size()}">50</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function exportTableToExcel(tableID, filename = ''){
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel';
+            var tableSelect = document.getElementById(tableID);
+            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+            filename = filename ? filename + '.xls' : 'excel_data.xls';
+            downloadLink = document.createElement("a");
+            document.body.appendChild(downloadLink);
+            if(navigator.msSaveOrOpenBlob){
+                var blob = new Blob(['\ufeff', tableHTML], {type: dataType});
+                navigator.msSaveOrOpenBlob(blob, filename);
+            }else{
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+                downloadLink.download = filename;
+                downloadLink.click();
+            }
+        }
+
+        // Animación del contador
+        document.addEventListener('DOMContentLoaded', function() {
+            const counter = document.querySelector('.summary-value');
+            const target = parseInt(counter.textContent);
+            const duration = 2000;
+            const step = target / (duration / 16);
+            let current = 0;
+            
+            counter.textContent = '0';
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    counter.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current);
+                }
+            }, 16);
+        });
+    </script>
+</body>
+</html>

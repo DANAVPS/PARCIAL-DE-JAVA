@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Estudiante - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 70px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            margin-top: 15px;
+        }
+
+        .user-info strong {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .user-info .email {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .student-card {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border: 2px solid var(--accent);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .student-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .student-info-item label {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-info-item label i {
+            font-size: 16px;
+        }
+
+        .student-info-item span {
+            color: var(--dark);
+            font-size: 18px;
+            font-weight: 500;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 3px solid var(--success);
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: var(--dark);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border: 2px solid var(--accent);
+            color: var(--dark);
+            padding: 30px 25px;
+            border-radius: 15px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            transition: left 0.4s;
+            z-index: 0;
+        }
+
+        .menu-btn:hover::before {
+            left: 0;
+        }
+
+        .menu-btn i {
+            font-size: 36px;
+            color: var(--primary);
+            transition: all 0.3s;
+            z-index: 1;
+        }
+
+        .menu-btn span {
+            z-index: 1;
+            transition: color 0.3s;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(162, 10, 10, 0.2);
+            border-color: var(--primary);
+        }
+
+        .menu-btn:hover i,
+        .menu-btn:hover span {
+            color: white;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(121, 147, 81, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .score-card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-card i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .score-card strong {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+
+        .score-value {
+            font-size: 56px;
+            font-weight: 700;
+            display: block;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-level {
+            font-size: 20px;
+            font-style: italic;
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .no-results {
+            background: linear-gradient(135deg, rgba(255, 163, 108, 0.1) 0%, rgba(246, 238, 201, 0.3) 100%);
+            border-left: 5px solid var(--secondary);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .no-results i {
+            font-size: 64px;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .no-results p {
+            color: var(--dark);
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .logout-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(162, 10, 10, 0.05) 0%, rgba(246, 238, 201, 0.2) 100%);
+            border-radius: 15px;
+        }
+
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(162, 10, 10, 0.3);
+        }
+
+        .logout-btn:hover {
+            background: #8a0808;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(162, 10, 10, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .student-card {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .score-value {
+                font-size: 42px;
+            }
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .student-card,
+        .menu-btn,
+        .score-card,
+        .no-results {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .menu-btn:nth-child(1) { animation-delay: 0.1s; }
+        .menu-btn:nth-child(2) { animation-delay: 0.2s; }
+        .menu-btn:nth-child(3) { animation-delay: 0.3s; }
+        .menu-btn:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-user-graduate"></i> Portal del Estudiante</h1>
+                <div class="user-info">
+                    <strong th:text="${usuario.primerNombre + ' ' + usuario.primerApellido}"></strong>
+                    <div class="email">
+                        <i class="fas fa-envelope"></i> <span th:text="${usuario.correoElectronico}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Información del Estudiante -->
+            <div class="student-card">
+                <div class="student-info-item">
+                    <label>
+                        <i class="fas fa-graduation-cap"></i>
+                        Programa
+                    </label>
+                    <span th:text="${usuario.programa}">Ingeniería de Sistemas</span>
+                </div>
+                <div class="student-info-item">
+                    <label>
+                        <i class="fas fa-calendar-alt"></i>
+                        Semestre
+                    </label>
+                    <span th:text="${usuario.semestre}">5</span>
+                </div>
+                <div class="student-info-item">
+                    <label>
+                        <i class="fas fa-id-badge"></i>
+                        N° Registro
+                    </label>
+                    <span th:text="${usuario.numeroRegistro}">20231234567</span>
+                </div>
+            </div>
+
+            <!-- Menú de Opciones -->
+            <div>
+                <div class="section-title">
+                    <i class="fas fa-list-ul"></i>
+                    <span>Mis Opciones</span>
+                </div>
+                <div class="menu-grid">
+                    <a href="/estudiante/identificacion" class="menu-btn">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Mis Datos Personales</span>
+                    </a>
+                    <a href="/estudiante/resultado-unico" class="menu-btn">
+                        <i class="fas fa-star"></i>
+                        <span>Mi Último Resultado</span>
+                    </a>
+                    <a href="/estudiante/resultados-total" class="menu-btn">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Todos mis Resultados</span>
+                    </a>
+                    <a href="/estudiante/resultado-beneficio" class="menu-btn">
+                        <i class="fas fa-gift"></i>
+                        <span>Beneficios Obtenidos</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Último Resultado -->
+            <div th:if="${resultadoReciente != null}" class="score-card">
+                <div class="score-card-content">
+                    <i class="fas fa-trophy"></i>
+                    <strong>Tu último puntaje global</strong>
+                    <span class="score-value" th:text="${resultadoReciente.puntajeGlobal}">285</span>
+                    <span class="score-level" th:text="${resultadoReciente.nivelGlobal}">Nivel B+</span>
+                </div>
+            </div>
+
+            <!-- Sin Resultados -->
+            <div th:if="${totalResultados == 0}" class="no-results">
+                <i class="fas fa-inbox"></i>
+                <p>Aún no tienes resultados registrados en el sistema.</p>
+            </div>
+
+            <!-- Cerrar Sesión -->
+            <div class="logout-section">
+                <a href="/auth/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animación del puntaje si existe
+            const scoreValue = document.querySelector('.score-value');
+            if (scoreValue) {
+                const target = parseInt(scoreValue.textContent);
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                scoreValue.textContent = '0';
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        scoreValue.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        scoreValue.textContent = Math.floor(current);
+                    }
+                }, 16);
+            }
+
+            // Efecto hover en las tarjetas de información
+            const infoItems = document.querySelectorAll('.student-info-item');
+            infoItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

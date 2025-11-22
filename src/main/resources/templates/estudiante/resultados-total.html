@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todos mis Resultados - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .resultado-card {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, white 100%);
+            border-left: 5px solid var(--success);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resultado-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--success) 0%, #6b8247 100%);
+            transition: width 0.3s ease;
+        }
+
+        .resultado-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(121, 147, 81, 0.2);
+        }
+
+        .resultado-card:hover::before {
+            width: 100%;
+            opacity: 0.05;
+        }
+
+        .resultado-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .resultado-fecha {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .resultado-fecha i {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .resultado-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid var(--success);
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.15);
+        }
+
+        .info-item strong {
+            color: var(--dark);
+            font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+        }
+
+        .score-value {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .score-level {
+            color: var(--success);
+            font-style: italic;
+            font-size: 16px;
+        }
+
+        .no-result-card {
+            background: linear-gradient(135deg, rgba(255, 163, 108, 0.15) 0%, rgba(246, 238, 201, 0.5) 100%);
+            border: 3px solid var(--secondary);
+            padding: 60px 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255, 163, 108, 0.2);
+        }
+
+        .no-result-icon {
+            font-size: 80px;
+            color: var(--secondary);
+            margin-bottom: 25px;
+            animation: swing 3s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .no-result-card h3 {
+            font-size: 28px;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .no-result-card p {
+            font-size: 18px;
+            color: var(--dark);
+            opacity: 0.9;
+        }
+
+        .back-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(121, 147, 81, 0.05) 0%, rgba(246, 238, 201, 0.2) 100%);
+            border-radius: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--success);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+        }
+
+        .back-btn:hover {
+            background: #6b8247;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .resultado-card {
+                padding: 20px;
+            }
+
+            .resultado-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .resultado-info {
+                grid-template-columns: 1fr;
+            }
+
+            .no-result-card {
+                padding: 40px 20px;
+            }
+        }
+
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .resultado-card {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .resultado-card:nth-child(1) { animation-delay: 0.1s; }
+        .resultado-card:nth-child(2) { animation-delay: 0.2s; }
+        .resultado-card:nth-child(3) { animation-delay: 0.3s; }
+        .resultado-card:nth-child(4) { animation-delay: 0.4s; }
+        .resultado-card:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                </div>
+                <h1><i class="fas fa-chart-line"></i> Todos mis Resultados Saber Pro</h1>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Lista de Resultados -->
+            <div th:each="r, iterStat : ${resultados}" class="resultado-card">
+                <div class="resultado-header">
+                    <div class="resultado-fecha">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Examen del </span>
+                        <strong th:text="${r.fechaExamen != null ? #temporals.format(r.fechaExamen, 'dd/MM/yyyy') : 'Fecha no registrada'}">
+                            15/10/2023
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="resultado-info">
+                    <div class="info-item">
+                        <strong><i class="fas fa-trophy"></i> Puntaje Global</strong>
+                        <div class="score-display">
+                            <span class="score-value" th:text="${r.puntajeGlobal}">285</span>
+                            <span>→</span>
+                            <span class="score-level" th:text="${r.nivelGlobal}">Nivel B+</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <strong><i class="fas fa-language"></i> Inglés</strong>
+                        <div class="score-display">
+                            <span class="score-value" th:text="${r.ingles}">168</span>
+                            <span>→</span>
+                            <span class="score-level" th:text="${r.nivelIngles}">B1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sin Resultados -->
+            <div th:if="${resultados == null || resultados.isEmpty()}" class="no-result-card">
+                <div class="no-result-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>No tienes resultados registrados aún</h3>
+                <p>El coordinador debe registrarlos para que aparezcan aquí.</p>
+            </div>
+
+            <!-- Botón Volver -->
+            <div class="back-section">
+                <a href="/estudiante/" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efecto de conteo en los puntajes
+            const scoreValues = document.querySelectorAll('.score-value');
+            
+            scoreValues.forEach(score => {
+                const target = parseInt(score.textContent);
+                const duration = 1500;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                score.textContent = '0';
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        score.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        score.textContent = Math.floor(current);
+                    }
+                }, 16);
+            });
+        });
+    </script>
+</body>
+</html>

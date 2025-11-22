@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - UTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #A20A0A;
+            --secondary: #FFA36C;
+            --accent: #F6EEC9;
+            --success: #799351;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--accent) 0%, #fff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(162, 10, 10, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo img {
+            height: 60px;
+            filter: brightness(0) invert(1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-info strong {
+            font-size: 16px;
+        }
+
+        .logout-btn {
+            background: var(--secondary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: #ff8c4d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 163, 108, 0.4);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.success {
+            background: rgba(121, 147, 81, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert.error {
+            background: rgba(162, 10, 10, 0.1);
+            border-left: 4px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .section-header i {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .section-header h2 {
+            color: var(--dark);
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 15px;
+            border: 2px solid var(--light);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(255, 163, 108, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--success) 0%, #6b8247 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(121, 147, 81, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(121, 147, 81, 0.4);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, #8a0808 100%);
+            color: white;
+        }
+
+        th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--light);
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 163, 108, 0.05);
+        }
+
+        td {
+            padding: 15px;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge.active {
+            background: rgba(121, 147, 81, 0.2);
+            color: var(--success);
+        }
+
+        .badge.inactive {
+            background: rgba(162, 10, 10, 0.2);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #8a0808;
+            transform: scale(1.05);
+        }
+
+        .form-card {
+            background: linear-gradient(135deg, rgba(246, 238, 201, 0.3) 0%, rgba(255, 255, 255, 0.9) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="header">
+            <div class="header-logo">
+                <img src="/img/Logo-UTS-1.png" alt="Logo UTS">
+                <h1><i class="fas fa-user-shield"></i> Panel Administrador</h1>
+            </div>
+            <div class="user-info">
+                <span>Bienvenido, <strong th:text="${usuario.primerNombre + ' ' + usuario.primerApellido}"></strong></span>
+                <a href="/auth/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                </a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Alertas -->
+            <div th:if="${success}" class="alert success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${error}" class="alert error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Formulario Crear Coordinador -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-user-plus"></i>
+                    <h2>Crear Nuevo Coordinador</h2>
+                </div>
+
+                <form method="post" action="/admin/coordinadores/crear" class="form-card">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> Tipo Documento</label>
+                            <select name="tipoDocumento" required>
+                                <option value="CC">Cédula de Ciudadanía</option>
+                                <option value="CE">Cédula de Extranjería</option>
+                                <option value="TI">Tarjeta de Identidad</option>
+                                <option value="PA">Pasaporte</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-hashtag"></i> Número Documento</label>
+                            <input type="text" name="numeroDocumento" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Primer Nombre</label>
+                            <input type="text" name="primerNombre" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Segundo Nombre</label>
+                            <input type="text" name="segundoNombre">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Primer Apellido</label>
+                            <input type="text" name="primerApellido" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Segundo Apellido</label>
+                            <input type="text" name="segundoApellido">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                            <input type="email" name="correoElectronico" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Teléfono</label>
+                            <input type="text" name="numeroTelefonico">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-briefcase"></i> Área Asignada</label>
+                            <input type="text" name="areaAsignada" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i> Contraseña</label>
+                            <input type="password" name="password" required placeholder="Ej: 123456">
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> CREAR COORDINADOR
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabla de Coordinadores -->
+            <div class="section">
+                <div class="section-header">
+                    <i class="fas fa-users"></i>
+                    <h2>Lista de Coordinadores</h2>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Documento</th>
+                                <th>Nombre Completo</th>
+                                <th>Correo</th>
+                                <th>Área</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="c : ${coordinadores}">
+                                <td th:text="${c.id}"></td>
+                                <td th:text="${c.tipoDocumento + ' ' + c.numeroDocumento}"></td>
+                                <td th:text="${c.primerNombre + ' ' + (c.segundoNombre != null ? c.segundoNombre + ' ' : '') + c.primerApellido + ' ' + (c.segundoApellido != null ? c.segundoApellido : '')}"></td>
+                                <td th:text="${c.correoElectronico}"></td>
+                                <td th:text="${c.areaAsignada}"></td>
+                                <td>
+                                    <span class="badge" th:classappend="${c.activo ? 'active' : 'inactive'}" 
+                                          th:text="${c.activo ? 'Activo' : 'Inactivo'}"></span>
+                                </td>
+                                <td>
+                                    <form method="post" th:action="@{/admin/coordinadores/eliminar/{id}(id=${c.id})}" style="display:inline">
+                                        <button type="submit" class="btn-danger" 
+                                                onclick="return confirm('¿Está seguro de desactivar este coordinador?')">
+                                            <i class="fas fa-user-times"></i> Desactivar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Animación suave para alertas
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transform = 'translateY(-20px)';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            });
+        });
+
+        // Validación de formulario
+        const form = document.querySelector('form[action*="crear"]');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const inputs = form.querySelectorAll('input[required], select[required]');
+                let isValid = true;
+
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.style.borderColor = '#A20A0A';
+                    } else {
+                        input.style.borderColor = '#799351';
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Por favor, complete todos los campos obligatorios');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
